@@ -1,0 +1,1363 @@
+/* ============================================================
+   ResQSense — style.css
+   Stage 2: Complete Styling
+   
+   TABLE OF CONTENTS:
+   1. CSS Reset & Root Variables (Design System)
+   2. Base / Global Styles
+   3. Header & Navigation
+   4. Hero Section
+   5. Main Content & Dashboard
+   6. Data Cards
+   7. AI Advice Section
+   8. Eco-Risk Score Section
+   9. Emergency Kit Section
+   10. Footer
+   11. Animations & Keyframes
+   12. Responsive Design (Mobile)
+============================================================ */
+
+/* ============================================================
+   1. CSS RESET & ROOT VARIABLES
+============================================================ */
+
+/*
+  * = universal selector — targets EVERY element.
+  box-sizing: border-box → padding and border are INCLUDED in width/height.
+  
+  Default (content-box): width=200px + padding=20px = 220px total. Confusing!
+  border-box:            width=200px includes padding. Much more predictable.
+  
+  This is the #1 thing every developer adds first.
+*/
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+/*
+  :root = the <html> element itself.
+  CSS Custom Properties (variables) defined here are GLOBAL.
+  They cascade down to every element on the page.
+  
+  Naming convention: --category-name
+  Access with: var(--variable-name)
+*/
+:root {
+  /* === COLORS === */
+  --color-bg: #f7faf8;
+  --color-bg-surface: #ffffff;
+  --color-bg-elevated: #eef5f2;
+  --color-border: #d8e5df;
+
+  --color-primary: #1b4965;
+  --color-primary-dim: #14384e;
+  --color-accent: #2d6a4f;
+  --color-accent-dim: #245640;
+
+  --color-success: #40916c;
+  --color-warning: #e9c46a;
+  --color-danger: #c44536;
+
+  --text-primary: #1f2937;
+  --text-secondary: #5b6875;
+  --text-muted: #94a3b8; /* very muted — placeholders, disabled */
+
+  /* === TYPOGRAPHY === */
+  --font-heading: "Space Grotesk", sans-serif; /* for titles */
+  --font-body: "Inter", sans-serif; /* for body text */
+
+  /* === SPACING === */
+  /* 
+    Using a spacing scale (multiples of 4px) keeps everything consistent.
+    This is how real design systems (like Material Design, Tailwind) work.
+  */
+  --space-xs: 4px;
+  --space-sm: 8px;
+  --space-md: 16px;
+  --space-lg: 24px;
+  --space-xl: 40px;
+  --space-2xl: 64px;
+  --space-3xl: 96px;
+
+  /* === BORDER RADIUS === */
+  --radius-sm: 6px;
+  --radius-md: 12px;
+  --radius-lg: 20px;
+  --radius-xl: 32px;
+
+  /* === SHADOWS === */
+
+  --shadow-card: 0 8px 24px rgba(15, 23, 42, 0.08);
+  --shadow-glow: 0 0 0 rgba(0, 0, 0, 0);
+  /* === TRANSITIONS === */
+  --transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  /*
+    cubic-bezier = custom easing curve. This one is smooth and snappy.
+    0.25s = duration (quarter second).
+    'all' = apply to all changing properties.
+  */
+}
+
+/* ============================================================
+   2. BASE / GLOBAL STYLES
+============================================================ */
+
+html {
+  scroll-behavior: smooth;
+  /*
+    scroll-behavior: smooth → clicking anchor links (#section)
+    scrolls smoothly instead of jumping instantly.
+  */
+}
+
+body {
+  font-family: var(--font-body);
+  background-color: var(--color-bg);
+  color: var(--text-primary);
+  line-height: 1.6;
+  /*
+    line-height: 1.6 → each line of text is 1.6× the font size tall.
+    This makes paragraphs much more readable.
+  */
+  min-height: 100vh;
+  /*
+    vh = viewport height. 1vh = 1% of the screen height.
+    100vh = the full visible screen height.
+    min-height ensures body is always at least as tall as the screen.
+  */
+  overflow-x: hidden;
+  /* Prevent horizontal scroll (common bug with full-width elements) */
+}
+
+/* Global link styles */
+a {
+  text-decoration: none; /* removes underline */
+  color: inherit; /* inherits parent's color instead of default blue */
+  transition: var(--transition);
+}
+
+/* Reset list styles (we use <ul> for nav, so remove bullets & padding) */
+ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+/* Make images responsive by default */
+img {
+  max-width: 100%;
+  display: block;
+}
+
+/* Button reset — removes browser default button styles */
+button {
+  cursor: pointer;
+  border: none;
+  background: none;
+  font-family: var(--font-body);
+}
+
+/* ============================================================
+   3. HEADER & NAVIGATION
+============================================================ */
+
+.site-header {
+  position: fixed;
+  /*
+    fixed → the header stays at the top even when you scroll.
+    It's "fixed" relative to the viewport (screen), not the page.
+    This is called a "sticky navbar".
+  */
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  /*
+    z-index controls the "stack order" — which elements appear on TOP of others.
+    Higher z-index = in front. We use 1000 so header is always above everything.
+    Think of it like layers in Figma or Photoshop.
+  */
+  background: rgba(255, 255, 255, 0.88);
+  backdrop-filter: blur(12px);
+  /*
+    backdrop-filter: blur → blurs whatever is BEHIND this element.
+    This creates the "frosted glass" effect you see in modern apps.
+    rgba(10, 14, 26, 0.85) = our background color at 85% opacity (15% transparent).
+    Together = glassmorphism effect!
+  */
+  border-bottom: 1px solid var(--color-border);
+}
+
+.navbar {
+  max-width: 1200px;
+  /*
+    max-width → the content won't stretch beyond 1200px on large screens.
+    On screens smaller than 1200px, it takes the full width.
+    This keeps content readable on ultra-wide monitors.
+  */
+  margin: 0 auto;
+  /*
+    margin: 0 auto → centers the element horizontally.
+    top/bottom margin = 0, left/right margin = auto (splits equally).
+    This is THE way to center a block element.
+  */
+  padding: var(--space-md) var(--space-lg);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  /*
+    space-between → first item at left edge, last item at right edge,
+    equal space between all items.
+  */
+  gap: var(--space-lg);
+}
+
+/* Logo */
+.logo {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  font-family: var(--font-heading);
+  font-size: 1.4rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  /*
+    letter-spacing: negative value → tightens characters together.
+    Common in modern heading typography. Makes text feel bold & confident.
+    em = relative to the element's own font size.
+  */
+}
+
+.logo-icon {
+  font-size: 1.6rem;
+}
+
+.logo-text {
+  color: var(--text-primary);
+}
+
+.logo-text strong {
+  color: var(--color-primary);
+  /* The "Sense" part of ResQSense is red — creates a visual split */
+}
+
+/* Nav links */
+.nav-links {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xl);
+}
+
+.nav-links a {
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+  position: relative;
+  /* position: relative needed so the ::after pseudo-element positions itself here */
+  padding-bottom: 4px;
+}
+
+/*
+  ::after = a PSEUDO-ELEMENT — a fake element created purely with CSS.
+  It appears AFTER the element's content.
+  We use it to create the animated underline on hover.
+  ::before works the same but appears BEFORE the content.
+*/
+.nav-links a::after {
+  content: ""; /* required — even if empty, content must be set */
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 0; /* starts at 0 width (invisible) */
+  height: 2px;
+  background: var(--color-accent);
+  transition: var(--transition);
+}
+
+/*
+  :hover = pseudo-class — styles applied when mouse is over the element.
+  When hovered, the ::after underline grows from 0 → 100% width.
+  Combined with transition, this creates a smooth slide-in effect.
+*/
+.nav-links a:hover {
+  color: var(--text-primary);
+}
+.nav-links a:hover::after {
+  width: 100%;
+}
+
+/* Hamburger button (mobile menu icon) */
+.hamburger {
+  display: none; /* hidden on desktop, shown on mobile via media query */
+  flex-direction: column;
+  gap: 5px;
+  padding: 4px;
+}
+
+.hamburger span {
+  display: block;
+  width: 24px;
+  height: 2px;
+  background: var(--text-primary);
+  border-radius: 2px;
+  transition: var(--transition);
+}
+
+/* ============================================================
+   4. HERO SECTION
+============================================================ */
+
+.hero {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-3xl) var(--space-lg);
+  padding-top: 120px; /* extra top padding because of fixed header */
+  position: relative; /* needed for absolute-positioned bg elements */
+  overflow: hidden;
+  text-align: center;
+}
+
+.hero-content {
+  position: relative; /* so it sits above the bg elements */
+  z-index: 2;
+  max-width: 700px;
+}
+
+/* Badge above the heading */
+.hero-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-xs);
+  background: rgba(45, 106, 79, 0.12);
+  border: 1px solid rgba(45, 106, 79, 0.25);
+  color: var(--color-primary);
+  padding: var(--space-xs) var(--space-md);
+  border-radius: var(--radius-xl);
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  margin-bottom: var(--space-lg);
+  animation: fadeInDown 0.6s ease both;
+  /*
+    animation: name duration easing fill-mode
+    'both' = apply animation styles before AND after it runs.
+    We'll define fadeInDown in section 11.
+  */
+}
+
+.hero-title {
+  font-family: var(--font-heading);
+  font-size: clamp(2.5rem, 6vw, 4.5rem);
+  /*
+    clamp(min, preferred, max) = responsive font size.
+    min: 2.5rem (never smaller than this)
+    preferred: 6vw (6% of viewport width — scales with screen)
+    max: 4.5rem (never bigger than this)
+    
+    This is MUCH better than hardcoding font sizes for each breakpoint.
+    vw = viewport width unit.
+  */
+  font-weight: 700;
+  line-height: 1.1;
+  letter-spacing: -0.03em;
+  margin-bottom: var(--space-lg);
+  animation: fadeInDown 0.6s ease 0.1s both; /* 0.1s delay */
+}
+
+.hero-title .highlight {
+  color: var(--color-primary);
+  position: relative;
+}
+
+.hero-subtitle {
+  font-size: clamp(1rem, 2vw, 1.2rem);
+  color: var(--text-secondary);
+  max-width: 560px;
+  margin: 0 auto var(--space-xl);
+  animation: fadeInDown 0.6s ease 0.2s both;
+}
+
+/* Search Container */
+.search-container {
+  display: flex;
+  gap: var(--space-sm);
+  max-width: 560px;
+  margin: 0 auto var(--space-md);
+  animation: fadeInDown 0.6s ease 0.3s both;
+}
+
+.search-box {
+  flex: 1;
+  /*
+    flex: 1 → this item grows to fill ALL available space.
+    The button next to it stays its natural size.
+    This is how you make an "input + button" row where input takes remaining space.
+  */
+  display: flex;
+  align-items: center;
+  background: var(--color-bg-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: 0 var(--space-md);
+  transition: var(--transition);
+}
+
+.search-box:focus-within {
+  /*
+    :focus-within = applied to a PARENT when any CHILD has focus.
+    When the user clicks inside the input, the whole search box gets highlighted.
+    This is a modern CSS trick for custom input styling.
+  */
+  border-color: var(--color-accent);
+  box-shadow: 0 0 0 3px rgba(76, 201, 240, 0.15);
+}
+
+.search-icon {
+  font-size: 1.1rem;
+  margin-right: var(--space-sm);
+}
+
+.city-input {
+  flex: 1;
+  background: transparent; /* inherits parent background */
+  border: none;
+  outline: none; /* removes default focus ring (we made our own with box-shadow) */
+  color: var(--text-primary);
+  font-size: 1rem;
+  font-family: var(--font-body);
+  padding: var(--space-md) 0;
+}
+
+.city-input::placeholder {
+  /* ::placeholder = styles the hint text inside an input */
+  color: var(--text-muted);
+}
+
+/* Search Button */
+.search-btn {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  background: linear-gradient(
+    135deg,
+    var(--color-primary),
+    var(--color-accent)
+  );
+  color: white;
+  padding: var(--space-md) var(--space-lg);
+  border-radius: var(--radius-md);
+  font-size: 1rem;
+  font-weight: 600;
+  font-family: var(--font-body);
+  transition: var(--transition);
+  white-space: nowrap; /* prevents button text from wrapping to 2 lines */
+}
+
+.search-btn:hover {
+  background: linear-gradient(
+    135deg,
+    var(--color-primary-dim),
+    var(--color-accent-dim)
+  );
+  transform: translateY(-2px);
+  /*
+    transform: translateY(-2px) → moves element 2px UP on hover.
+    Negative Y = up. Positive Y = down.
+    Combined with transition, this creates a "lift" hover effect.
+  */
+  box-shadow: 0 8px 25px rgba(230, 57, 70, 0.35);
+}
+
+.search-btn:active {
+  /* :active = while the button is being CLICKED (mouse held down) */
+  transform: translateY(0);
+  /* snaps back to original position for a "press" feel */
+}
+
+.btn-arrow {
+  transition: var(--transition);
+}
+.search-btn:hover .btn-arrow {
+  transform: translateX(4px);
+  /* arrow shifts right on hover — small but polished detail */
+}
+
+/* Quick city chips */
+.quick-cities {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-sm);
+  flex-wrap: wrap;
+  /* flex-wrap: wrap → items move to next line if they don't fit */
+  animation: fadeInDown 0.6s ease 0.4s both;
+}
+
+.quick-label {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+
+.city-chip {
+  background: var(--color-bg-surface);
+  border: 1px solid var(--color-border);
+  color: var(--text-secondary);
+  padding: var(--space-xs) var(--space-md);
+  border-radius: var(--radius-xl);
+  font-size: 0.85rem;
+  font-family: var(--font-body);
+  transition: var(--transition);
+}
+
+.city-chip:hover {
+  background: var(--color-bg-elevated);
+  border-color: var(--color-accent);
+  color: var(--color-accent);
+  transform: translateY(-2px);
+}
+
+/* Hero Background Decorative Elements */
+.hero-bg-elements {
+  position: absolute;
+  inset: 0;
+  /* inset: 0 = top:0; right:0; bottom:0; left:0 — shorthand to fill parent */
+  z-index: 1;
+  pointer-events: none;
+  /* pointer-events: none → mouse clicks pass THROUGH this element to elements below */
+}
+
+.bg-circle {
+  position: absolute;
+  border-radius: 50%;
+  /*
+    border-radius: 50% on a square element = perfect circle.
+  */
+  filter: blur(80px);
+  /*
+    filter: blur() → blurs the element itself (not the background like backdrop-filter).
+    High blur value creates a soft glowing orb effect.
+  */
+  opacity: 0.06;
+}
+
+.bg-circle-1 {
+  width: 600px;
+  height: 600px;
+  background: var(--color-primary);
+  top: -200px;
+  right: -200px;
+  animation: float 8s ease-in-out infinite;
+}
+
+.bg-circle-2 {
+  width: 400px;
+  height: 400px;
+  background: var(--color-accent);
+  bottom: -100px;
+  left: -100px;
+  animation: float 10s ease-in-out infinite reverse;
+  /* reverse → animation plays backwards */
+}
+
+.bg-circle-3 {
+  width: 300px;
+  height: 300px;
+  background: var(--color-success);
+  top: 40%;
+  left: 40%;
+  animation: float 12s ease-in-out infinite 2s;
+  /* 2s → animation delay before starting */
+}
+
+/* ============================================================
+   5. MAIN CONTENT & DASHBOARD
+============================================================ */
+
+.main-content {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: var(--space-2xl) var(--space-lg);
+}
+
+/* Loading State */
+.loading-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-lg);
+  padding: var(--space-3xl);
+  color: var(--text-secondary);
+}
+
+/* Spinner animation */
+.spinner {
+  width: 48px;
+  height: 48px;
+  border: 3px solid var(--color-border);
+  border-top-color: var(--color-accent);
+  /*
+    We color only the TOP border in accent color.
+    When the element spins, only that 1 side is visible at a time = spinner effect.
+  */
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+  /* linear = constant speed (vs ease which speeds up/slows down) */
+}
+
+/* Empty State */
+.empty-state {
+  text-align: center;
+  padding: var(--space-3xl);
+  color: var(--text-secondary);
+}
+
+.empty-icon {
+  font-size: 4rem;
+  margin-bottom: var(--space-md);
+}
+.empty-state h2 {
+  font-family: var(--font-heading);
+  margin-bottom: var(--space-sm);
+  color: var(--text-primary);
+}
+
+/* Dashboard */
+.dashboard {
+  animation: fadeIn 0.5s ease;
+}
+
+/* City Header */
+.city-header {
+  display: flex;
+  align-items: baseline;
+  /* baseline = align by text baseline (bottom of letters) — good for mixed font sizes */
+  gap: var(--space-md);
+  margin-bottom: var(--space-xl);
+  padding-bottom: var(--space-md);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.city-name {
+  font-family: var(--font-heading);
+  font-size: 2rem;
+  font-weight: 700;
+}
+
+.last-updated {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+
+/* ============================================================
+   6. DATA CARDS
+============================================================ */
+
+.cards-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  /*
+    repeat(3, 1fr) = 3 columns, each taking 1 fraction (equal thirds).
+    This is how you make responsive 3-column layouts.
+  */
+  gap: var(--space-lg);
+  margin-bottom: var(--space-2xl);
+}
+
+.data-card {
+  background: var(--color-bg-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: var(--space-lg);
+  transition: var(--transition);
+  position: relative;
+  overflow: hidden;
+}
+
+.data-card::before {
+  /*
+    ::before pseudo-element — creates a top accent bar on each card.
+    This adds a colored line at the very top of the card.
+  */
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: var(--color-accent);
+}
+
+.data-card:hover {
+  transform: translateY(-4px);
+  border-color: rgba(45, 106, 79, 0.25);
+  box-shadow: var(--shadow-card);
+}
+
+/* Different top border colors per card type */
+.weather-card::before {
+  background: var(--color-accent);
+}
+.disaster-card::before {
+  background: var(--color-primary);
+}
+.risk-card::before {
+  background: var(--color-warning);
+}
+
+.card-header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  margin-bottom: var(--space-md);
+}
+
+.card-icon {
+  font-size: 1.3rem;
+}
+
+.card-title {
+  font-family: var(--font-heading);
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+/* Big stat number */
+.stat-big {
+  font-family: var(--font-heading);
+  font-size: 2.5rem;
+  font-weight: 700;
+  line-height: 1;
+  margin-bottom: var(--space-xs);
+  color: var(--color-accent);
+}
+
+.stat-label {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  margin-bottom: var(--space-md);
+}
+
+.stat-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.85rem;
+  padding: var(--space-xs) 0;
+  border-bottom: 1px solid var(--color-border);
+  color: var(--text-secondary);
+}
+
+.stat-row:last-child {
+  border-bottom: none;
+}
+
+/* Alert List */
+.alert-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+}
+
+.alert-item {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-sm);
+  padding: var(--space-sm);
+  background: rgba(230, 57, 70, 0.07);
+  border: 1px solid rgba(230, 57, 70, 0.2);
+  border-radius: var(--radius-sm);
+  font-size: 0.85rem;
+}
+
+.alert-dot {
+  width: 8px;
+  height: 8px;
+  min-width: 8px; /* prevents shrinking in flex */
+  border-radius: 50%;
+  background: var(--color-primary);
+  margin-top: 4px;
+  animation: pulse 2s infinite;
+  /* pulsing dot = live/active indicator */
+}
+
+.no-alerts {
+  color: var(--text-muted);
+  font-size: 0.9rem;
+  text-align: center;
+  padding: var(--space-md);
+}
+
+/* Risk Meter */
+.risk-meter {
+  text-align: center;
+  margin-bottom: var(--space-md);
+}
+
+.risk-score {
+  font-family: var(--font-heading);
+  font-size: 3rem;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.risk-label {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  margin-top: var(--space-xs);
+}
+
+.risk-bar-container {
+  height: 8px;
+  background: var(--color-border);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.risk-bar {
+  height: 100%;
+  border-radius: 4px;
+  background: linear-gradient(
+    180deg,
+    var(--color-primary),
+    var(--color-accent)
+  );
+  /*
+    linear-gradient = CSS gradient.
+    90deg = left to right direction.
+    Green → Yellow → Red = classic risk spectrum.
+    The width is controlled by JS: style="width: 65%"
+  */
+  transition: width 1s cubic-bezier(0.4, 0, 0.2, 1);
+  /* smooth width animation when JS changes it */
+}
+
+/* ============================================================
+   7. AI ADVICE SECTION
+============================================================ */
+
+/* Reusable section header pattern */
+.section-header {
+  text-align: center;
+  margin-bottom: var(--space-xl);
+}
+
+.section-badge {
+  display: inline-block;
+  background: rgba(76, 201, 240, 0.1);
+  border: 1px solid rgba(76, 201, 240, 0.25);
+  color: var(--color-accent);
+  padding: var(--space-xs) var(--space-md);
+  border-radius: var(--radius-xl);
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin-bottom: var(--space-md);
+}
+
+.section-title {
+  font-family: var(--font-heading);
+  font-size: clamp(1.5rem, 3vw, 2.2rem);
+  font-weight: 700;
+  margin-bottom: var(--space-sm);
+}
+
+.section-subtitle {
+  color: var(--text-secondary);
+  max-width: 500px;
+  margin: 0 auto;
+}
+
+.ai-advice-section {
+  margin-bottom: var(--space-2xl);
+}
+
+.ai-advice-box {
+  background: var(--color-bg-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: var(--space-xl);
+  position: relative;
+  overflow: hidden;
+  min-height: 120px;
+}
+
+/* Glowing left border for the AI box */
+.ai-advice-box::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 4px;
+  background: linear-gradient(
+    180deg,
+    var(--color-accent),
+    var(--color-primary)
+  );
+}
+
+/* AI thinking dots */
+.ai-thinking {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  color: var(--text-secondary);
+}
+
+.thinking-dots {
+  display: flex;
+  gap: 4px;
+}
+
+.thinking-dots span {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--color-accent);
+  animation: thinking 1.4s ease-in-out infinite;
+}
+
+/* Stagger the 3 dots — each starts at a different delay */
+.thinking-dots span:nth-child(1) {
+  animation-delay: 0s;
+}
+.thinking-dots span:nth-child(2) {
+  animation-delay: 0.2s;
+}
+.thinking-dots span:nth-child(3) {
+  animation-delay: 0.4s;
+}
+/*
+  nth-child(n) = selects the nth child element.
+  1 = first, 2 = second, etc.
+*/
+
+/* AI Response text */
+.ai-response {
+  color: var(--text-primary);
+  line-height: 1.8;
+  font-size: 1rem;
+}
+
+.ai-response h4 {
+  font-family: var(--font-heading);
+  color: var(--color-accent);
+  margin: var(--space-md) 0 var(--space-sm);
+  font-size: 1rem;
+}
+
+.ai-response ul {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+}
+
+.ai-response li {
+  display: flex;
+  gap: var(--space-sm);
+  padding: var(--space-sm);
+  background: rgba(76, 201, 240, 0.05);
+  border-radius: var(--radius-sm);
+  font-size: 0.95rem;
+}
+
+.ai-response li::before {
+  content: "→";
+  color: var(--color-accent);
+  font-weight: 700;
+  flex-shrink: 0; /* prevents the arrow from shrinking in flex */
+}
+
+/* ============================================================
+   8. ECO-RISK SCORE SECTION
+============================================================ */
+
+.eco-section {
+  margin-bottom: var(--space-2xl);
+}
+
+.eco-quiz {
+  background: var(--color-bg-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: var(--space-xl);
+}
+
+.quiz-question {
+  margin-bottom: var(--space-xl);
+}
+
+.question-text {
+  font-size: 1.05rem;
+  font-weight: 500;
+  margin-bottom: var(--space-md);
+  color: var(--text-primary);
+}
+
+.option-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  /* 2 columns for answer options */
+  gap: var(--space-sm);
+}
+
+.option-btn {
+  background: var(--color-bg);
+  border: 1px solid var(--color-border);
+  color: var(--text-secondary);
+  padding: var(--space-md);
+  border-radius: var(--radius-md);
+  font-size: 0.9rem;
+  font-family: var(--font-body);
+  text-align: left;
+  transition: var(--transition);
+  cursor: pointer;
+}
+
+.option-btn:hover {
+  border-color: var(--color-accent);
+  color: var(--text-primary);
+  background: var(--color-bg-elevated);
+}
+
+/* JS adds this class when an option is selected */
+.option-btn.selected {
+  background: rgba(76, 201, 240, 0.1);
+  border-color: var(--color-accent);
+  color: var(--color-accent);
+}
+
+/* Calculate button */
+.calculate-btn {
+  display: block;
+  width: 100%;
+  padding: var(--space-md) var(--space-lg);
+  background: linear-gradient(
+    135deg,
+    var(--color-primary),
+    var(--color-accent)
+  );
+  color: white;
+  border-radius: var(--radius-md);
+  font-size: 1rem;
+  font-weight: 600;
+  font-family: var(--font-body);
+  transition: var(--transition);
+  margin-top: var(--space-lg);
+}
+
+.calculate-btn:hover:not(:disabled) {
+  /* :not(:disabled) = apply hover ONLY when button is NOT disabled */
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(230, 57, 70, 0.3);
+  opacity: 0.9;
+}
+
+.calculate-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed; /* shows a ⛔ cursor on hover */
+}
+
+/* Eco Result */
+.eco-result {
+  background: var(--color-bg-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: var(--space-xl);
+  margin-top: var(--space-lg);
+  animation: fadeIn 0.5s ease;
+}
+
+.eco-score-display {
+  text-align: center;
+  margin-bottom: var(--space-xl);
+}
+
+.eco-score-number {
+  font-family: var(--font-heading);
+  font-size: 4rem;
+  font-weight: 700;
+  line-height: 1;
+  color: var(--color-success);
+}
+
+.eco-score-grade {
+  font-size: 1.2rem;
+  color: var(--text-secondary);
+  margin-top: var(--space-sm);
+}
+
+/* ============================================================
+   9. EMERGENCY KIT SECTION
+============================================================ */
+
+.kit-section {
+  margin-bottom: var(--space-2xl);
+}
+
+.kit-container {
+  background: var(--color-bg-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: var(--space-xl);
+}
+
+.kit-placeholder {
+  text-align: center;
+  color: var(--text-muted);
+  padding: var(--space-xl);
+}
+
+/* Kit items injected by JS */
+.kit-category {
+  margin-bottom: var(--space-xl);
+}
+
+.kit-category h4 {
+  font-family: var(--font-heading);
+  font-size: 1rem;
+  color: var(--color-accent);
+  margin-bottom: var(--space-md);
+  padding-bottom: var(--space-sm);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.kit-items-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  /*
+    auto-fill = create as many columns as will fit.
+    minmax(200px, 1fr) = each column is at least 200px, max 1 fraction.
+    Result: responsive grid that auto-wraps without media queries!
+  */
+  gap: var(--space-sm);
+}
+
+.kit-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  padding: var(--space-sm) var(--space-md);
+  background: var(--color-bg);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.kit-item:hover {
+  border-color: var(--color-accent);
+}
+
+/* Checkbox */
+.kit-item input[type="checkbox"] {
+  accent-color: var(--color-accent);
+  /*
+    accent-color → changes the color of checkboxes, radio buttons, etc.
+    Modern CSS — no more custom checkbox hacks!
+  */
+  width: 16px;
+  height: 16px;
+  cursor: pointer;
+}
+
+.kit-item.checked {
+  opacity: 0.5;
+  text-decoration: line-through;
+}
+
+/* ============================================================
+   10. FOOTER
+============================================================ */
+
+.site-footer {
+  border-top: 1px solid var(--color-border);
+  padding: var(--space-2xl) var(--space-lg);
+  margin-top: var(--space-3xl);
+}
+
+.footer-content {
+  max-width: 1200px;
+  margin: 0 auto;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+}
+
+.footer-brand {
+  font-family: var(--font-heading);
+  font-size: 1.2rem;
+  font-weight: 700;
+}
+
+.footer-tagline {
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+}
+.footer-note {
+  color: var(--text-muted);
+  font-size: 0.8rem;
+}
+
+.footer-disclaimer {
+  color: var(--text-muted);
+  font-size: 0.8rem;
+  max-width: 500px;
+  margin: 0 auto;
+}
+
+/* ============================================================
+   11. ANIMATIONS & KEYFRAMES
+============================================================ */
+
+/*
+  @keyframes = defines a named animation sequence.
+  You set what the element looks like at 0% (start) and 100% (end).
+  CSS smoothly transitions between them.
+*/
+
+@keyframes fadeInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+    /* starts invisible, 20px above final position */
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+    /* ends fully visible at normal position */
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes float {
+  /* makes the background orbs slowly bob up and down */
+  0%,
+  100% {
+    transform: translateY(0px) scale(1);
+  }
+  50% {
+    transform: translateY(-30px) scale(1.05);
+  }
+}
+
+@keyframes spin {
+  /* loading spinner rotation */
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes pulse {
+  /* alert dot pulsing effect */
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.5;
+    transform: scale(0.8);
+  }
+}
+
+@keyframes thinking {
+  /* AI thinking dots bounce */
+  0%,
+  80%,
+  100% {
+    transform: translateY(0);
+    opacity: 0.3;
+  }
+  40% {
+    transform: translateY(-8px);
+    opacity: 1;
+  }
+}
+
+/* ============================================================
+   12. RESPONSIVE DESIGN
+============================================================ */
+
+/*
+  @media queries = apply styles ONLY when certain conditions are true.
+  max-width: 768px → applies when screen is 768px wide or LESS (tablets, mobile).
+  
+  768px, 1024px, 1280px are common "breakpoints".
+  px here refers to CSS pixels, not physical pixels.
+*/
+
+/* Tablet */
+@media (max-width: 1024px) {
+  .cards-grid {
+    grid-template-columns: repeat(2, 1fr);
+    /* 3 columns → 2 columns on tablet */
+  }
+}
+
+/* Mobile */
+@media (max-width: 768px) {
+  /* Hide nav links on mobile */
+  .nav-links {
+    display: none;
+  }
+
+  /* Show hamburger button on mobile */
+  .hamburger {
+    display: flex;
+  }
+
+  /* Stack search box + button vertically */
+  .search-container {
+    flex-direction: column;
+  }
+
+  .search-btn {
+    justify-content: center;
+  }
+
+  /* Single column cards on mobile */
+  .cards-grid {
+    grid-template-columns: 1fr;
+  }
+
+  /* Single column options on mobile */
+  .option-grid {
+    grid-template-columns: 1fr;
+  }
+
+  /* Smaller hero text on very small screens */
+  .hero {
+    padding: var(--space-2xl) var(--space-md);
+    padding-top: 100px;
+  }
+}
+
+/* Very small phones */
+@media (max-width: 400px) {
+  .quick-cities {
+    flex-direction: column;
+    align-items: center;
+  }
+}
