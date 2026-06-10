@@ -1,0 +1,414 @@
+<!doctype html>
+
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="ResQSense — AI-powered disaster awareness, eco-risk scoring and personal safety platform for India."
+    />
+    <title>ResQSense — Know the Risk. Stay Safe.</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="style.css" />
+  </head>
+
+  <body>
+    <header class="site-header">
+      <nav class="navbar">
+        <a href="#" class="logo">
+          <span class="logo-icon"></span>
+          <span class="logo-text">ResQ<strong>Sense</strong></span>
+        </a>
+        <ul class="nav-links">
+          <li><a href="#dashboard">Dashboard</a></li>
+          <li><a href="#ai-advice">AI Safety</a></li>
+          <li><a href="#eco-score">Eco Score</a></li>
+          <li><a href="#emergency-kit">Emergency Kit</a></li>
+        </ul>
+        Hamburger Menu Button (shown only on mobile) -->
+        <button class="hamburger" id="hamburger-btn" aria-label="Open menu">
+          <span></span>
+          <span></span>
+          <span></span>
+        </button>
+      </nav>
+    </header>
+    <section class="hero" id="hero">
+      <div class="hero-content">
+        <div class="hero-badge">Real-time Disaster Intelligence</div>
+
+        <h1 class="hero-title">
+          Know the Risk.<br />
+          <span class="highlight">Stay Safe.</span>
+        </h1>
+
+        <p class="hero-subtitle">
+          AI-powered disaster awareness, eco-risk scoring, and personalized
+          safety guidance — built for India.
+        </p>
+        <div class="search-container">
+          <div class="search-box">
+            <span class="search-icon"></span>
+            <input
+              type="text"
+              id="city-input"
+              class="city-input"
+              placeholder="Enter your city (e.g. Ahmedabad, Mumbai...)"
+              autocomplete="off"
+            />
+          </div>
+
+          <button class="search-btn" id="search-btn" onclick="searchCity()">
+            <span>Analyze Risk</span>
+            <span class="btn-arrow">→</span>
+          </button>
+        </div>
+        <div class="quick-cities">
+          <span class="quick-label">Quick search:</span>
+          <button class="city-chip" onclick="quickSearch('Ahmedabad')">
+            Ahmedabad
+          </button>
+          <button class="city-chip" onclick="quickSearch('Mumbai')">
+            Mumbai
+          </button>
+          <button class="city-chip" onclick="quickSearch('Chennai')">
+            Chennai
+          </button>
+          <button class="city-chip" onclick="quickSearch('Delhi')">
+            Delhi
+          </button>
+        </div>
+      </div>
+      <div class="hero-bg-elements" aria-hidden="true">
+        <div class="bg-circle bg-circle-1"></div>
+        <div class="bg-circle bg-circle-2"></div>
+        <div class="bg-circle bg-circle-3"></div>
+      </div>
+    </section>
+    <main class="main-content" id="main-content">
+      <div class="loading-state" id="loading-state" style="display: none">
+        <div class="spinner"></div>
+        <p>Analyzing risk for your city...</p>
+      </div>
+
+      <div class="empty-state" id="empty-state">
+        <div class="empty-icon"></div>
+        <h2>Enter a city to get started</h2>
+        <p>
+          We'll show you live disaster alerts, weather risk, and AI safety
+          advice.
+        </p>
+      </div>
+
+      <section class="dashboard" id="dashboard" style="display: none">
+        <div class="city-header">
+          <h2 class="city-name" id="city-name-display">—</h2>
+          <span class="last-updated" id="last-updated">—</span>
+        </div>
+        <div class="cards-grid">
+          <article class="data-card weather-card">
+            <div class="card-header">
+              <span class="card-icon"></span>
+              <h3 class="card-title">Weather</h3>
+            </div>
+            <div class="card-body">
+              <div class="stat-big" id="weather-temp">—</div>
+              <div class="stat-label" id="weather-desc">Fetching...</div>
+              <div class="stat-row">
+                <span>Humidity</span>
+                <span id="weather-humidity">—</span>
+              </div>
+              <div class="stat-row">
+                <span>Wind</span>
+                <span id="weather-wind">—</span>
+              </div>
+            </div>
+          </article>
+          <article class="data-card disaster-card">
+            <div class="card-header">
+              <span class="card-icon"></span>
+              <h3 class="card-title">Disaster Alerts</h3>
+            </div>
+            <div class="card-body">
+              <div class="alert-list" id="alert-list">
+                <div class="no-alerts">Loading alerts...</div>
+              </div>
+            </div>
+          </article>
+          <article class="data-card risk-card">
+            <div class="card-header">
+              <span class="card-icon"></span>
+              <h3 class="card-title">Risk Level</h3>
+            </div>
+            <div class="card-body">
+              <div class="risk-meter">
+                <div class="risk-score" id="risk-score">—</div>
+                <div class="risk-label" id="risk-label">Calculating...</div>
+              </div>
+              <div class="risk-bar-container">
+                <div class="risk-bar" id="risk-bar" style="width: 0%"></div>
+              </div>
+            </div>
+          </article>
+        </div>
+        <section class="ai-advice-section" id="ai-advice">
+          <div class="section-header">
+            <span class="section-badge"> Powered by AI</span>
+            <h2 class="section-title">Personalized Safety Advice</h2>
+            <p class="section-subtitle">
+              AI analyzes live data from your city and gives you actionable
+              safety steps.
+            </p>
+          </div>
+
+          <div class="ai-advice-box" id="ai-advice-box">
+            <div class="ai-thinking" id="ai-thinking" style="display: none">
+              <div class="thinking-dots">
+                <span></span><span></span><span></span>
+              </div>
+              <p>AI is analyzing your city's risk profile...</p>
+            </div>
+            <div class="ai-response" id="ai-response"></div>
+          </div>
+        </section>
+        <section class="eco-section" id="eco-score">
+          <div class="section-header">
+            <span class="section-badge"> Environmental</span>
+            <h2 class="section-title">Your Eco-Risk Score</h2>
+            <p class="section-subtitle">
+              How do your daily habits contribute to environmental risk? Answer
+              5 quick questions.
+            </p>
+          </div>
+
+          <div class="eco-quiz" id="eco-quiz">
+            <div class="quiz-question" data-question="1">
+              <p class="question-text">How do you usually commute?</p>
+              <div class="option-grid">
+                <button
+                  class="option-btn"
+                  data-points="1"
+                  onclick="selectOption(this, 1)"
+                >
+                  Walk / Cycle
+                </button>
+                <button
+                  class="option-btn"
+                  data-points="2"
+                  onclick="selectOption(this, 1)"
+                >
+                  Public transport
+                </button>
+                <button
+                  class="option-btn"
+                  data-points="3"
+                  onclick="selectOption(this, 1)"
+                >
+                  Personal car (small)
+                </button>
+                <button
+                  class="option-btn"
+                  data-points="4"
+                  onclick="selectOption(this, 1)"
+                >
+                  SUV / Large vehicle
+                </button>
+              </div>
+            </div>
+            <div class="quiz-question" data-question="2">
+              <p class="question-text">How much meat do you eat per week?</p>
+              <div class="option-grid">
+                <button
+                  class="option-btn"
+                  data-points="1"
+                  onclick="selectOption(this, 2)"
+                >
+                  None (vegetarian)
+                </button>
+                <button
+                  class="option-btn"
+                  data-points="2"
+                  onclick="selectOption(this, 2)"
+                >
+                  1–2 times
+                </button>
+                <button
+                  class="option-btn"
+                  data-points="3"
+                  onclick="selectOption(this, 2)"
+                >
+                  3–5 times
+                </button>
+                <button
+                  class="option-btn"
+                  data-points="4"
+                  onclick="selectOption(this, 2)"
+                >
+                  Daily
+                </button>
+              </div>
+            </div>
+
+            <div class="quiz-question" data-question="3">
+              <p class="question-text">How do you handle plastic waste?</p>
+              <div class="option-grid">
+                <button
+                  class="option-btn"
+                  data-points="1"
+                  onclick="selectOption(this, 3)"
+                >
+                  Always recycle
+                </button>
+                <button
+                  class="option-btn"
+                  data-points="2"
+                  onclick="selectOption(this, 3)"
+                >
+                  Sometimes recycle
+                </button>
+                <button
+                  class="option-btn"
+                  data-points="3"
+                  onclick="selectOption(this, 3)"
+                >
+                  Rarely recycle
+                </button>
+                <button
+                  class="option-btn"
+                  data-points="4"
+                  onclick="selectOption(this, 3)"
+                >
+                  Burn or dump
+                </button>
+              </div>
+            </div>
+            <div class="quiz-question" data-question="4">
+              <p class="question-text">What powers your home?</p>
+              <div class="option-grid">
+                <button
+                  class="option-btn"
+                  data-points="1"
+                  onclick="selectOption(this, 4)"
+                >
+                  Solar energy
+                </button>
+                <button
+                  class="option-btn"
+                  data-points="2"
+                  onclick="selectOption(this, 4)"
+                >
+                  Grid (limited use)
+                </button>
+                <button
+                  class="option-btn"
+                  data-points="3"
+                  onclick="selectOption(this, 4)"
+                >
+                  Grid (heavy use)
+                </button>
+                <button
+                  class="option-btn"
+                  data-points="4"
+                  onclick="selectOption(this, 4)"
+                >
+                  Generator / diesel
+                </button>
+              </div>
+            </div>
+            <div class="quiz-question" data-question="5">
+              <p class="question-text">
+                How often do you buy new clothes/electronics?
+              </p>
+              <div class="option-grid">
+                <button
+                  class="option-btn"
+                  data-points="1"
+                  onclick="selectOption(this, 5)"
+                >
+                  Rarely / secondhand
+                </button>
+                <button
+                  class="option-btn"
+                  data-points="2"
+                  onclick="selectOption(this, 5)"
+                >
+                  A few times a year
+                </button>
+                <button
+                  class="option-btn"
+                  data-points="3"
+                  onclick="selectOption(this, 5)"
+                >
+                  Monthly
+                </button>
+                <button
+                  class="option-btn"
+                  data-points="4"
+                  onclick="selectOption(this, 5)"
+                >
+                  Frequently
+                </button>
+              </div>
+            </div>
+
+            <button
+              class="calculate-btn"
+              id="calculate-eco-btn"
+              onclick="calculateEcoScore()"
+              disabled
+            >
+              Calculate My Eco-Risk Score
+            </button>
+          </div>
+          <div class="eco-result" id="eco-result" style="display: none">
+            <div class="eco-score-display">
+              <div class="eco-score-number" id="eco-score-number">0</div>
+              <div class="eco-score-grade" id="eco-score-grade">—</div>
+            </div>
+            <div class="eco-ai-tips" id="eco-ai-tips"></div>
+          </div>
+        </section>
+        <section class="kit-section" id="emergency-kit">
+          <div class="section-header">
+            <span class="section-badge"> Preparedness</span>
+            <h2 class="section-title">Emergency Kit Builder</h2>
+            <p class="section-subtitle">
+              AI generates a custom emergency kit based on your city's most
+              likely disasters.
+            </p>
+          </div>
+
+          <div class="kit-container" id="kit-container">
+            <p class="kit-placeholder">
+              Search for a city first to generate your personalized emergency
+              kit.
+            </p>
+          </div>
+        </section>
+      </section>
+    </main>
+    <footer class="site-footer">
+      <div class="footer-content">
+        <p class="footer-brand">ResQSense</p>
+        <p class="footer-tagline">
+          Built by <strong>Pravada Raval</strong> — CSBS student, PDEU
+        </p>
+        <p class="footer-note">
+          Data sources: USGS Earthquake API · OpenWeatherMap · ReliefWeb ·
+          Claude AI
+        </p>
+        <p class="footer-disclaimer">
+          For awareness only. In emergencies, always contact official
+          authorities (NDMA, local police).
+        </p>
+      </div>
+    </footer>
+    <script src="script.js"></script>
+  </body>
+</html>
